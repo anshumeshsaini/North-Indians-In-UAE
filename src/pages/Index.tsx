@@ -10,6 +10,9 @@ import { TestimonialSection } from "@/components/TestimonialSection";
 import { CommunityEngagementSection } from "@/components/CommunityEngagementSection";
 import { ScaleSection } from "@/components/ScaleSection";
 import { BrandedAppsSection } from "@/components/BrandedAppsSection";
+import ThreeDHoverGallery from "@/components/3d-hover-gallery";
+import {Footer} from "@/components/Footer";
+
 
 const Index = () => {
   return (
@@ -22,9 +25,15 @@ const Index = () => {
       <LiveEventsSection />
       <SetupSection />
       <TestimonialSection />
+   
       <CommunityEngagementSection />
       <ScaleSection />
       <BrandedAppsSection />
+      <ThreeDHoverGallery
+
+ 
+/>
+<Footer/>
     </div>
   );
 };
