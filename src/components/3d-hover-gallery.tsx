@@ -103,6 +103,7 @@ const MemberShowcaseGallery: React.FC<MemberGalleryProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const [modalOpen, setModalOpen] = useState<number | null>(null);
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -146,7 +147,12 @@ const MemberShowcaseGallery: React.FC<MemberGalleryProps> = ({
   }, [autoPlay, autoPlayDelay, members.length]);
 
   const handleMemberClick = (index: number, member: any) => {
-    setActiveIndex(activeIndex === index ? null : index);
+    if (isMobile) {
+      // On mobile, open modal instead of expanding the card
+      setModalOpen(index);
+    } else {
+      setActiveIndex(activeIndex === index ? null : index);
+    }
     onMemberClick?.(index, member);
   };
 
@@ -186,6 +192,9 @@ const MemberShowcaseGallery: React.FC<MemberGalleryProps> = ({
         const nextIndex = index < members.length - 1 ? index + 1 : 0;
         (containerRef.current?.children[nextIndex] as HTMLElement)?.focus();
         break;
+      case "Escape":
+        setModalOpen(null);
+        break;
     }
   };
 
@@ -194,19 +203,19 @@ const MemberShowcaseGallery: React.FC<MemberGalleryProps> = ({
     const isFocused = focusedIndex === index;
 
     return {
-      width: isActive ? `${activeWidth}vw` : `${itemWidth}vw`,
-      height: isActive ? `calc(${itemHeight * 1.2}vw + ${itemHeight * 1.2}vh)` : `calc(${itemHeight}vw + ${itemHeight}vh)`,
+      width: isActive && !isMobile ? `${activeWidth}vw` : `${itemWidth}vw`,
+      height: isActive && !isMobile ? `calc(${itemHeight * 1.2}vw + ${itemHeight * 1.2}vh)` : `calc(${itemHeight}vw + ${itemHeight}vh)`,
       backgroundImage: `url(${members[index].image})`,
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundColor,
       cursor: "pointer",
       filter: isActive || isFocused ? "inherit" : "brightness(0.95)",
-      transform: isActive ? `translateZ(calc(${hoverScale}vw + ${hoverScale}vh))` : "none",
+      transform: isActive && !isMobile ? `translateZ(calc(${hoverScale}vw + ${hoverScale}vh))` : "none",
       transition: `transform ${transitionDuration}s ease, filter ${transitionDuration}s ease, width ${transitionDuration}s ease`,
       willChange: "transform, filter, width",
       zIndex: isActive ? 100 : "auto",
-      margin: isActive ? "0 0.45vw" : "0",
+      margin: isActive && !isMobile ? "0 0.45vw" : "0",
       outline: isFocused ? "2px solid #8b5cf6" : "none",
       outlineOffset: "2px",
       borderRadius: "1rem",
@@ -262,7 +271,7 @@ const MemberShowcaseGallery: React.FC<MemberGalleryProps> = ({
         >
           <div
             ref={containerRef}
-            className="flex justify-center items-center w-full flex-wrap md:flex-nowrap"
+            className="flex justify-center items-center w-full flex-wrap md:flex-nowrap px-4 md:px-0"
             style={{
               perspective: `calc(${perspective}vw + ${perspective}vh)`,
               gap: `${gap}rem`,
@@ -289,7 +298,7 @@ const MemberShowcaseGallery: React.FC<MemberGalleryProps> = ({
                 >
                   {/* Member info overlay */}
                   <div className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent text-white rounded-b-lg transition-all duration-500 ${
-                    isActive ? 'opacity-100' : 'opacity-0'
+                    isActive || isMobile ? 'opacity-100' : 'opacity-0'
                   }`}>
                     <h3 className="font-bold text-lg truncate">{member.name}</h3>
                     <p className="text-sm text-purple-200">{member.role}</p>
@@ -297,7 +306,7 @@ const MemberShowcaseGallery: React.FC<MemberGalleryProps> = ({
                   </div>
                   
                   {/* Active indicator */}
-                  {isActive && (
+                  {isActive && !isMobile && (
                     <div className="absolute top-3 right-3 w-3 h-3 rounded-full bg-green-400 animate-pulse ring-2 ring-white"></div>
                   )}
                 </div>
@@ -306,10 +315,49 @@ const MemberShowcaseGallery: React.FC<MemberGalleryProps> = ({
           </div>
         </div>
 
+        {/* Mobile Modal */}
+        {modalOpen !== null && isMobile && (
+          <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={() => setModalOpen(null)}>
+            <div className="bg-white rounded-2xl max-w-md w-full overflow-hidden" onClick={(e) => e.stopPropagation()}>
+              <div className="relative h-64 w-full">
+                <img 
+                  src={members[modalOpen].image} 
+                  alt={members[modalOpen].name}
+                  className="w-full h-full object-cover"
+                />
+                <button 
+                  className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 flex items-center justify-center text-white"
+                  onClick={() => setModalOpen(null)}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="p-6">
+                <h3 className="text-2xl font-bold text-gray-900">{members[modalOpen].name}</h3>
+                <p className="text-purple-600 font-medium">{members[modalOpen].role}</p>
+                <p className="text-gray-500 mt-2">{formatJoinDate(members[modalOpen].joinedDate)}</p>
+                <p className="text-gray-600 mt-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                
+                <div className="flex space-x-3 mt-6">
+                  <button className="flex-1 py-3 bg-purple-100 text-purple-700 rounded-lg font-medium">
+                    Message
+                  </button>
+                  <button className="flex-1 py-3 bg-purple-600 text-white rounded-lg font-medium">
+                    Connect
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Stats section */}
        
+
         {/* CTA section */}
-        
+       
       </div>
     </section>
   );
