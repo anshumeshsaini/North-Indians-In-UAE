@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import Lottie from "lottie-react";
-import communityAnimation from "@/assets/community.json";
+import communityAnimation from "@/assets/Community.json";
 
 
 
