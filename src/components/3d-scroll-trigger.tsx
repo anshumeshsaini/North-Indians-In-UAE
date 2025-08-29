@@ -1,0 +1,273 @@
+"use client";
+
+import {
+  motion,
+  useAnimationFrame,
+  useMotionValue,
+  useScroll,
+  useSpring,
+  useTransform,
+  useVelocity,
+} from "framer-motion";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import type { MotionValue } from "framer-motion";
+
+import { cn } from "../lib/utils";
+
+interface ThreeDScrollTriggerRowProps
+  extends React.HTMLAttributes<HTMLDivElement> {
+  children: React.ReactNode;
+  baseVelocity?: number;
+  direction?: 1 | -1;
+}
+
+export const wrap = (min: number, max: number, v: number) => {
+  const rangeSize = max - min;
+  return ((((v - min) % rangeSize) + rangeSize) % rangeSize) + min;
+};
+
+const ThreeDScrollTriggerContext =
+  React.createContext<MotionValue<number> | null>(null);
+
+export function ThreeDScrollTriggerContainer({
+  children,
+  className,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  const { scrollY } = useScroll();
+  const scrollVelocity = useVelocity(scrollY);
+  const smoothVelocity = useSpring(scrollVelocity, {
+    damping: 50,
+    stiffness: 400,
+  });
+  const velocityFactor = useTransform(smoothVelocity, (v) => {
+    const sign = v < 0 ? -1 : 1;
+    const magnitude = Math.min(5, (Math.abs(v) / 1000) * 5);
+    return sign * magnitude;
+  });
+
+  return (
+    <ThreeDScrollTriggerContext.Provider value={velocityFactor}>
+      <div className={cn("relative w-full", className)} {...props}>
+        {children}
+      </div>
+    </ThreeDScrollTriggerContext.Provider>
+  );
+}
+
+export function ThreeDScrollTriggerRow(props: ThreeDScrollTriggerRowProps) {
+  const sharedVelocityFactor = useContext(ThreeDScrollTriggerContext);
+  if (sharedVelocityFactor) {
+    return (
+      <ThreeDScrollTriggerRowImpl
+        {...props}
+        velocityFactor={sharedVelocityFactor}
+      />
+    );
+  }
+  return <ThreeDScrollTriggerRowLocal {...props} />;
+}
+
+interface ThreeDScrollTriggerRowImplProps extends ThreeDScrollTriggerRowProps {
+  velocityFactor: MotionValue<number>;
+}
+
+function ThreeDScrollTriggerRowImpl({
+  children,
+  baseVelocity = 5,
+  direction = 1,
+  className,
+  velocityFactor,
+  ...props
+}: ThreeDScrollTriggerRowImplProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [numCopies, setNumCopies] = useState(1);
+  const x = useMotionValue(0);
+
+  const prevTimeRef = useRef(0);
+  const unitWidthRef = useRef(0);
+  const baseXRef = useRef(0);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Use a single observer for the container to update the number of copies
+    const ro = new ResizeObserver(([entry]) => {
+      const containerWidth = entry.contentRect.width;
+      const block = container.querySelector(
+        ".threed-scroll-trigger-block"
+      ) as HTMLDivElement;
+      if (!block) return;
+
+      const blockWidth = block.scrollWidth;
+      unitWidthRef.current = blockWidth;
+
+      if (blockWidth > 0) {
+        const nextCopies = Math.max(
+          3,
+          Math.ceil(containerWidth / blockWidth) + 2
+        );
+        setNumCopies(nextCopies);
+      }
+    });
+
+    ro.observe(container);
+
+    return () => ro.disconnect();
+  }, []);
+
+  useAnimationFrame((time) => {
+    const dt = (time - prevTimeRef.current) / 1000;
+    prevTimeRef.current = time;
+
+    const unitWidth = unitWidthRef.current;
+    if (unitWidth <= 0) return;
+
+    const velocity = velocityFactor.get();
+    const speedMultiplier = Math.min(5, Math.abs(velocity));
+    const scrollDirection = velocity >= 0 ? 1 : -1;
+    const currentDirection = direction * scrollDirection;
+
+    const pixelsPerSecond = (unitWidth * baseVelocity) / 100;
+    const moveBy =
+      currentDirection * pixelsPerSecond * (1 + speedMultiplier) * dt;
+
+    const newX = baseXRef.current + moveBy;
+    baseXRef.current = wrap(0, unitWidth, newX);
+    x.set(baseXRef.current);
+  });
+
+  const childrenArray = React.Children.toArray(children);
+
+  return (
+    <div
+      ref={containerRef}
+      className={cn("w-full overflow-hidden whitespace-nowrap", className)}
+      {...props}
+    >
+      <motion.div
+        className="inline-flex will-change-transform transform-gpu"
+        style={{ x: useTransform(x, (v) => `${-v}px`) }}
+      >
+        {Array.from({ length: numCopies }).map((_, i) => (
+          <div
+            key={i}
+            className={cn(
+              "inline-flex shrink-0",
+              i === 0 && "threed-scroll-trigger-block"
+            )}
+            aria-hidden={i !== 0}
+          >
+            {childrenArray}
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
+function ThreeDScrollTriggerRowLocal(props: ThreeDScrollTriggerRowProps) {
+  const { scrollY } = useScroll();
+  const localVelocity = useVelocity(scrollY);
+  const localSmoothVelocity = useSpring(localVelocity, {
+    damping: 50,
+    stiffness: 400,
+  });
+  const localVelocityFactor = useTransform(localSmoothVelocity, (v) => {
+    const sign = v < 0 ? -1 : 1;
+    const magnitude = Math.min(5, (Math.abs(v) / 1000) * 5);
+    return sign * magnitude;
+  });
+  return (
+    <ThreeDScrollTriggerRowImpl
+      {...props}
+      velocityFactor={localVelocityFactor}
+    />
+  );
+}
+
+// Testimonial Section Component with Heading
+export function TestimonialSection() {
+  return (
+    <section className="py-16 bg-gradient-to-b from-black-100 to-black-100">
+      <div className="container mx-auto px-4">
+        {/* Testimonial Heading */}
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+            What Our Clients Say
+          </h2>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            Don't just take our word for it - hear from some of our satisfied customers
+          </p>
+        </div>
+        
+        {/* Testimonial Scrolling Section */}
+        <ThreeDScrollTriggerContainer>
+          <ThreeDScrollTriggerRow baseVelocity={3} direction={1}>
+            {/* Testimonial Cards */}
+            {[
+              {
+                name: "Sarah Johnson",
+                role: "Marketing Director",
+                content: "This service completely transformed our online presence. Our engagement increased by 200% in just one month!",
+                avatar: "SJ"
+              },
+              {
+                name: "Michael Chen",
+                role: "Tech Startup CEO",
+                content: "Incredible attention to detail and professionalism. They delivered beyond our expectations.",
+                avatar: "MC"
+              },
+              {
+                name: "Emma Rodriguez",
+                role: "E-commerce Owner",
+                content: "The results speak for themselves. Our conversion rates have never been higher.",
+                avatar: "ER"
+              },
+              {
+                name: "David Wilson",
+                role: "Creative Agency Lead",
+                content: "A truly collaborative partnership that produced outstanding results for our clients.",
+                avatar: "DW"
+              },
+              {
+                name: "Priya Patel",
+                role: "Non-profit Director",
+                content: "They understood our mission completely and helped us reach a much wider audience.",
+                avatar: "PP"
+              }
+            ].map((testimonial, index) => (
+              <div 
+                key={index} 
+                className="flex-shrink-0 w-80 h-56 mx-4 bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between"
+              >
+                <p className="text-slate-700 mb-4 italic">"{testimonial.content}"</p>
+                <div className="flex items-center">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                    <span className="text-blue-800 font-semibold">{testimonial.avatar}</span>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-slate-800">{testimonial.name}</h4>
+                    <p className="text-slate-600 text-sm">{testimonial.role}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </ThreeDScrollTriggerRow>
+        </ThreeDScrollTriggerContainer>
+      </div>
+    </section>
+  );
+}
+
+// Usage example in a page component
+export default function TestimonialPage() {
+  return (
+    <div>
+      {/* Other page content */}
+      <TestimonialSection />
+      {/* Other page content */}
+    </div>
+  );
+}

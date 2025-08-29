@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import liveVideoImage from "@/assets/live-video-engagement.jpg";
-
+import Lottie from "lottie-react";
+import animation from "@/assets/Podcast.json";
 export const PersonalSection = () => {
   const [viewers, setViewers] = useState(99);
   const [likes, setLikes] = useState(84);
@@ -84,11 +85,19 @@ export const PersonalSection = () => {
             <div className="absolute -inset-4 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-3xl blur-xl opacity-50"></div>
             
             <div className="relative rounded-2xl overflow-hidden shadow-2xl border border-gray-100 transform hover:scale-[1.02] transition-transform duration-700 group">
-              <img 
-                src={liveVideoImage} 
-                alt="Community member as star of the show in live video session"
-                className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                {/* Right column - Lottie animation */}
+          <div className="flex-1 hidden lg:flex items-center justify-center relative">
+            <div className="relative w-full max-w-2xl">
+              <Lottie 
+
+                animationData={animation} 
+                loop={true}
+                className="w-full h-full"
               />
+              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-white/50 dark:to-black/50 rounded-full" />
+            </div>
+          </div>
+        </div>
               
               {/* Floating engagement indicators */}
               <div className="absolute top-6 left-6">
@@ -129,7 +138,7 @@ export const PersonalSection = () => {
             </div>
           </div>
         </div>
-      </div>
+
     </section>
   );
 };
