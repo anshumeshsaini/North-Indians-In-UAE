@@ -187,17 +187,18 @@ function ThreeDScrollTriggerRowLocal(props: ThreeDScrollTriggerRowProps) {
   );
 }
 
+
 // Testimonial Section Component with Heading
 export function TestimonialSection() {
   return (
-    <section className="py-16 bg-gradient-to-b from-black-100 to-black-100">
+    <section className="py-16 bg-gradient-to-b from-gray-100 to-gray-200">
       <div className="container mx-auto px-4">
         {/* Testimonial Heading */}
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-slate-800 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
             What Our Clients Say
           </h2>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Don't just take our word for it - hear from some of our satisfied customers
           </p>
         </div>
@@ -206,54 +207,7 @@ export function TestimonialSection() {
         <ThreeDScrollTriggerContainer>
           <ThreeDScrollTriggerRow baseVelocity={3} direction={1}>
             {/* Testimonial Cards */}
-            {[
-              {
-                name: "Sarah Johnson",
-                role: "Marketing Director",
-                content: "This service completely transformed our online presence. Our engagement increased by 200% in just one month!",
-                avatar: "SJ"
-              },
-              {
-                name: "Michael Chen",
-                role: "Tech Startup CEO",
-                content: "Incredible attention to detail and professionalism. They delivered beyond our expectations.",
-                avatar: "MC"
-              },
-              {
-                name: "Emma Rodriguez",
-                role: "E-commerce Owner",
-                content: "The results speak for themselves. Our conversion rates have never been higher.",
-                avatar: "ER"
-              },
-              {
-                name: "David Wilson",
-                role: "Creative Agency Lead",
-                content: "A truly collaborative partnership that produced outstanding results for our clients.",
-                avatar: "DW"
-              },
-              {
-                name: "Priya Patel",
-                role: "Non-profit Director",
-                content: "They understood our mission completely and helped us reach a much wider audience.",
-                avatar: "PP"
-              }
-            ].map((testimonial, index) => (
-              <div 
-                key={index} 
-                className="flex-shrink-0 w-80 h-56 mx-4 bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between"
-              >
-                <p className="text-slate-700 mb-4 italic">"{testimonial.content}"</p>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
-                    <span className="text-blue-800 font-semibold">{testimonial.avatar}</span>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800">{testimonial.name}</h4>
-                    <p className="text-slate-600 text-sm">{testimonial.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+            
           </ThreeDScrollTriggerRow>
         </ThreeDScrollTriggerContainer>
       </div>

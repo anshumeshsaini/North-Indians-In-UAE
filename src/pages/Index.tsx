@@ -42,47 +42,10 @@ const Index = () => {
       <ThreeDScrollTriggerRow baseVelocity={5} direction={1}>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
   {/* Testimonial 1 */}
-  <div className="px-4 py-4 bg-blue-500 text-white rounded-lg shadow-lg">
-    <img 
-      src="https://plus.unsplash.com/premium_photo-1756298027388-05fcfc5e8169?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8" 
-      alt="Olimpia Valli Fassi" 
-      className="w-16 h-16 rounded-full mb-2"
-    />
-    <h3 className="text-lg font-semibold">Olimpia Valli Fassi</h3>
-    <p className="text-sm italic">Dog Behaviorist</p>
-    <p className="mt-2">
-      "Swarm is a true differentiator. 
-"
-    </p>
-  </div>
-
-  {/* Testimonial 2 */}
-  <div className="px-4 py-4 bg-green-500 text-white rounded-lg shadow-lg">
-    <img 
-      src="https://plus.unsplash.com/premium_photo-1756298027388-05fcfc5e8169?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8" 
-      alt="Lucas Meyer" 
-      className="w-16 h-16 rounded-full mb-2"
-    />
-    <h3 className="text-lg font-semibold">Lucas Meyer</h3>
-    <p className="text-sm italic">Product Designer</p>
-    <p className="mt-2">
-      "I love how intuitive Swarm feels! "
-    </p>
-  </div>
+  
 
   {/* Testimonial 3 */}
-  <div className="px-4 py-4 bg-red-500 text-white rounded-lg shadow-lg">
-    <img 
-      src="https://plus.unsplash.com/premium_photo-1756298027388-05fcfc5e8169?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwxfHx8ZW58MHx8fHx8" 
-      alt="Amelia Chen" 
-      className="w-16 h-16 rounded-full mb-2"
-    />
-    <h3 className="text-lg font-semibold">Amelia Chen</h3>
-    <p className="text-sm italic">Startup Founder</p>
-    <p className="mt-2">
-      "Swarm has been a game-changer.."
-    </p>
-  </div>
+  
 
   {/* Testimonial 4 */}
   <div className="px-4 py-4 bg-purple-500 text-white rounded-lg shadow-lg">

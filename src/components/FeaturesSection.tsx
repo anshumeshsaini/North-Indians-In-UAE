@@ -44,9 +44,9 @@ export const FeaturesSection = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+        <div className="flex flex-col lg:flex-row gap-12 items-center max-w-6xl mx-auto">
           {/* Feature descriptions */}
-          <div className="space-y-8">
+          <div className="w-full lg:w-2/5 space-y-8">
             {features.map((feature, index) => (
               <div 
                 key={feature.id}
@@ -80,54 +80,56 @@ export const FeaturesSection = () => {
             ))}
           </div>
 
-          {/* Image with interactive feature points */}
-          <div className="relative flex justify-center items-center">
-            <div className="absolute -inset-4 bg-gradient-to-r rounded-3xl"></div>
+          {/* Image with interactive feature points - Made larger and centered */}
+          <div className="w-full lg:w-3/5 relative flex justify-center items-center">
+            <div className="w-full max-w-2xl mx-auto">
+              <div className="absolute -inset-4 bg-gradient-to-r rounded-3xl"></div>
 
-            <img 
-              src={liveVideoImage} 
-              alt="Community member sharing in live video with engagement metrics"
-              className="w-full h-full "
-            />
-            
-            {/* Interactive feature points */}
-            {features.map((feature, index) => (
-              <div
-                key={feature.id}
-                className={`absolute ${feature.position} transition-all duration-500 ${
-                  activeFeature === index ? 'scale-110 z-10' : 'scale-100'
-                }`}
-                onMouseEnter={() => setActiveFeature(index)}
-              >
-                <div className={`relative group cursor-pointer ${
-                  activeFeature === index ? 'animate-pulse' : ''
-                }`}>
-                  {/* Animated ring */}
-                  <div className={`absolute -inset-2 rounded-full ${
-                    activeFeature === index 
-                      ? 'bg-purple-400/30 animate-ping' 
-                      : 'group-hover:bg-purple-200/30'
-                  } transition-all duration-300`}></div>
-                  
-                  {/* Feature point */}
-                  <div className={`relative flex items-center space-x-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 ${
-                    activeFeature === index
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-white text-gray-900 group-hover:bg-purple-100'
+              <img 
+                src={liveVideoImage} 
+                alt="Community member sharing in live video with engagement metrics"
+                className="w-full h-auto max-h-[500px] object-contain mx-auto rounded-lg shadow-xl"
+              />
+              
+              {/* Interactive feature points */}
+              {features.map((feature, index) => (
+                <div
+                  key={feature.id}
+                  className={`absolute ${feature.position} transition-all duration-500 ${
+                    activeFeature === index ? 'scale-110 z-10' : 'scale-100'
+                  }`}
+                  onMouseEnter={() => setActiveFeature(index)}
+                >
+                  <div className={`relative group cursor-pointer ${
+                    activeFeature === index ? 'animate-pulse' : ''
                   }`}>
-                    <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
-                      {feature.icon}
+                    {/* Animated ring */}
+                    <div className={`absolute -inset-2 rounded-full ${
+                      activeFeature === index 
+                        ? 'bg-purple-400/30 animate-ping' 
+                        : 'group-hover:bg-purple-200/30'
+                    } transition-all duration-300`}></div>
+                    
+                    {/* Feature point */}
+                    <div className={`relative flex items-center space-x-2 px-4 py-2 rounded-full shadow-lg transition-all duration-300 ${
+                      activeFeature === index
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-white text-gray-900 group-hover:bg-purple-100'
+                    }`}>
+                      <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center">
+                        {feature.icon}
+                      </div>
+                      <span className="font-medium text-sm">{feature.title}</span>
                     </div>
-                    <span className="font-medium text-sm">{feature.title}</span>
+                    
+                    {/* Connecting line (visible when active) */}
+                    {activeFeature === index && (
+                      <div className="absolute top-1/2 -left-16 w-16 h-0.5 bg-purple-400 transform -translate-y-1/2"></div>
+                    )}
                   </div>
-                  
-                  {/* Connecting line (visible when active) */}
-                  {activeFeature === index && (
-                    <div className="absolute top-1/2 -left-16 w-16 h-0.5 bg-purple-400 transform -translate-y-1/2"></div>
-                  )}
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
@@ -150,7 +152,7 @@ export const FeaturesSection = () => {
             <div className="text-gray-600">Async Connection</div>
           </div>
         </div>
-</div>
+      </div>
     </section>
   );
 };
